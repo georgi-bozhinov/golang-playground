@@ -1,0 +1,8 @@
+---
+applications:
+  - name: golang-sample
+    memory: 128M
+    command: Go-Curriculum
+    env:
+      GOVERSION: go1.11.4
+      GOPACKAGENAME: Go-Curriculum
