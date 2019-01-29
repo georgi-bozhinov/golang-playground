@@ -37,11 +37,11 @@ func (n *NoteRepository) buildQueryString() string {
 	return fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", n.DBUser, n.DBPassword, n.DBHost, n.DBName)
 }
 
-func (n *NoteRepository) GetNotes(c chan Result) {
+func (n *NoteRepository) GetNotes() Result {
 	dbQuery := "SELECT * FROM notes"
 	rows, err := n.conn.Query(dbQuery)
 	if err != nil {
-		c <- Result{nil, err}
+		return Result{nil, err}
 	}
 
 	var notes []Note
@@ -49,27 +49,27 @@ func (n *NoteRepository) GetNotes(c chan Result) {
 		var note Note
 
 		if err := rows.Scan(&note.ID, &note.Title, &note.Description); err != nil {
-			c <- Result{nil, err}
+			return Result{nil, err}
 		}
 		notes = append(notes, note)
 	}
 
-	c <- Result{notes, nil}
+	return Result{notes, nil}
 }
 
-func (n *NoteRepository) GetNoteById(id string, c chan Result) {
+func (n *NoteRepository) GetNoteById(id string) Result {
 	rows, err := n.conn.Query("SELECT * FROM notes WHERE id = $1", id)
 
 	if err != nil {
-		c <- Result{nil, err}
+		return Result{nil, err}
 	}
 
 	var note Note
 	for rows.Next() {
 		if err := rows.Scan(&note.ID, &note.Title, &note.Description); err != nil {
-			c <- Result{nil, err}
+			return Result{nil, err}
 		}
 	}
 
-	c <- Result{[]Note{note}, nil}
+	return Result{[]Note{note}, nil}
 }

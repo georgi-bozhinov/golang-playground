@@ -21,10 +21,7 @@ func (nc NoteController) GetNotes(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	// Will be read from db
-	noteChan := make(chan Result)
-	go nc.Repository.GetNotes(noteChan)
-
-	res := <-noteChan
+	res := nc.Repository.GetNotes()
 
 	if res.Error != nil {
 		log.Fatal(res.Error)
@@ -45,10 +42,7 @@ func (nc NoteController) GetNoteById(w http.ResponseWriter, r *http.Request) {
 
 	params := mux.Vars(r)
 
-	noteChan := make(chan Result)
-	go nc.Repository.GetNoteById(params["id"], noteChan)
-
-	res := <-noteChan
+	res := nc.Repository.GetNoteById(params["id"])
 
 	if res.Error != nil {
 		log.Fatal(res.Error)
